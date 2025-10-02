@@ -60,18 +60,24 @@
       <textarea id="outputText" rows="5" readonly></textarea>
     </div>
 
-    <div class="card-footer">
-        <p><b>Catatan:</b></p>
-        <ul>
-          <li>ROT13: Mengganti huruf dengan huruf ke-13 setelahnya</li>
-          <li>AtBash: Membalik alfabet (A→Z, B→Y, dst)</li>
-          <li>AtBash encode & decode sama saja</li>
-        </ul>
+    <div class="card-footer"> 
+      <p><b>Catatan:</b></p>
+      <ul>
+       <li><b>ROT13:</b> Menggeser setiap huruf sebanyak 13 posisi dalam alfabet (A → N, B → O, dst). Encode & decode sama saja.</li>
+       <li><b>AtBash:</b> Membalik alfabet (A → Z, B → Y, C → X, dst). Encode & decode juga sama.</li>
+       <li><b>Jam Cipher:</b> 
+      Mengubah huruf menjadi format jam & menit.<br>
+      - Start Hour & Minute ditentukan di awal.<br>
+      - Huruf berikutnya maju sesuai step (menit per huruf).<br>
+      - Contoh: dengan step = 5 menit, A = 02:00, B = 02:05, C = 02:10.
+       </li>
+      </ul>
     </div>
+
   </div>
 
   <footer>
-    <p>Made with 💻 | Simple Cryptography Demo</p>
+    <p>Made by LunarX | Simple Cryptography Tools</p>
   </footer>
 
   <script src="script.js"></script>

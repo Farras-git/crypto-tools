@@ -48,6 +48,22 @@ h1 {
   color: #33ffaa;
 }
 
+.card-footer {
+  margin-top: 20px;
+  padding: 15px;
+  background: #29e69a;  /* ala crypto/gaming dark mode */
+  color: #245b4b;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.card-footer ul {
+  margin: 10px 0 0 20px;
+  margin-bottom: 15px;
+}
+
+
 /* Inputs */
 label {
   display: block;
