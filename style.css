@@ -1,0 +1,108 @@
+/* Global styles */
+body {
+  margin: 0;
+  font-family: 'Courier New', monospace;
+  background-color: #0f0f0f;
+  color: #00ff99;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Container */
+.container {
+  flex: 1;
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+/* Title & subtitle */
+h1 {
+  text-align: center;
+  color: #00ffcc;
+  text-shadow: 0 0 8px #00ffcc;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 0.9em;
+  color: #66ffcc;
+  margin-bottom: 20px;
+}
+
+/* Card */
+.card {
+  background-color: #1a1a1a;
+  border: 1px solid #00ff99;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 12px rgba(0, 255, 153, 0.3);
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 1.2em;
+  color: #33ffaa;
+}
+
+/* Inputs */
+label {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 10px;
+  background-color: #111;
+  border: 1px solid #00ff99;
+  border-radius: 6px;
+  color: #00ff99;
+  font-family: 'Courier New', monospace;
+  font-size: 1em;
+  resize: vertical;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #00ffcc;
+  box-shadow: 0 0 5px #00ffcc;
+}
+
+/* Buttons */
+.buttons {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+button {
+  flex: 1;
+  padding: 12px;
+  background-color: #00ff99;
+  border: none;
+  border-radius: 6px;
+  color: #111;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background-color: #00cc77;
+  box-shadow: 0 0 10px #00ff99;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 10px;
+  font-size: 0.8em;
+  background-color: #111;
+  color: #33ffaa;
+  border-top: 1px solid #00ff99;
+}
