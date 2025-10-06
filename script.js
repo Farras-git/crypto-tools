@@ -114,3 +114,42 @@ document.addEventListener("DOMContentLoaded", () => {
     outputEl.value = result;
   });
 });
+
+const themes = {
+  matrix: {
+    "--bg-color": "#000000",
+    "--text-color": "#00ff88",
+    "--card-bg": "#0d0d0d",
+    "--accent": "#00ff66",
+    "--accent-hover": "#00cc55",
+    "--footer-bg": "#00ff66",
+    "--footer-text": "#000000"
+  },
+  cyberpunk: {
+    "--bg-color": "#0a0014",
+    "--text-color": "#ff00ff",
+    "--card-bg": "#1b0033",
+    "--accent": "#00ffff",
+    "--accent-hover": "#ff00ff",
+    "--footer-bg": "linear-gradient(90deg, #00ffff, #ff00ff)",
+    "--footer-text": "#0a0014"
+  },
+  vaporwave: {
+    "--bg-color": "#1a0033",
+    "--text-color": "#ff66cc",
+    "--card-bg": "#26004d",
+    "--accent": "#66ccff",
+    "--accent-hover": "#ff66cc",
+    "--footer-bg": "linear-gradient(90deg, #ff66cc, #66ccff)",
+    "--footer-text": "#1a0033"
+  }
+};
+
+const themeSelect = document.getElementById("themeSelect");
+
+themeSelect.addEventListener("change", (e) => {
+  const selectedTheme = themes[e.target.value];
+  for (const variable in selectedTheme) {
+    document.documentElement.style.setProperty(variable, selectedTheme[variable]);
+  }
+});

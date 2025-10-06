@@ -1,12 +1,27 @@
+:root {
+  --bg-color: #0f0f0f;
+  --text-color: #00ff99;
+  --card-bg: #1a1a1a;
+  --accent: #00ff99;
+  --accent-hover: #00cc77;
+  --footer-bg: #01db80;
+  --footer-text: #1a1a1a;
+  --input-bg: #111;
+  --border-color: #00ff99;
+  --highlight: #00ffcc;
+  --subtitle: #66ffcc;
+}
+
 /* Global styles */
 body {
   margin: 0;
   font-family: 'Courier New', monospace;
-  background-color: #0f0f0f;
-  color: #00ff99;
+  background-color: var(--bg-color);
+  color: var(--text-color);
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Container */
@@ -20,49 +35,49 @@ body {
 /* Title & subtitle */
 h1 {
   text-align: center;
-  color: #00ffcc;
-  text-shadow: 0 0 8px #00ffcc;
+  color: var(--highlight);
+  text-shadow: 0 0 8px var(--highlight);
   margin-bottom: 10px;
 }
 
 .subtitle {
   text-align: center;
   font-size: 0.9em;
-  color: #66ffcc;
+  color: var(--subtitle);
   margin-bottom: 20px;
 }
 
 /* Card */
 .card {
-  background-color: #1a1a1a;
-  border: 1px solid #00ff99;
+  background-color: var(--card-bg);
+  border: 1px solid var(--accent);
   border-radius: 10px;
   padding: 20px;
   margin-bottom: 20px;
   box-shadow: 0 0 12px rgba(0, 255, 153, 0.3);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .card h2 {
   margin-top: 0;
   font-size: 1.2em;
-  color: #33ffaa;
+  color: var(--accent);
 }
 
+/* Card footer */
 .card-footer {
   margin-top: 20px;
   padding: 15px;
-  background: #01db80;  /* ala crypto/gaming dark mode */
-  color: #1a1a1a;
+  background: var(--footer-bg);
+  color: var(--footer-text);
   border-radius: 8px;
   font-size: 14px;
   line-height: 1.6;
 }
 
 .card-footer ul {
-  margin: 10px 0 0 20px;
-  margin-bottom: 15px;
+  margin: 10px 0 15px;
 }
-
 
 /* Inputs */
 label {
@@ -74,20 +89,21 @@ label {
 input, select, textarea {
   width: 100%;
   padding: 10px;
-  background-color: #111;
-  border: 1px solid #00ff99;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
-  color: #00ff99;
+  color: var(--text-color);
   font-family: 'Courier New', monospace;
   font-size: 1em;
   resize: vertical;
-  box-sizing: border-box ;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: #00ffcc;
-  box-shadow: 0 0 5px #00ffcc;
+  border-color: var(--highlight);
+  box-shadow: 0 0 5px var(--highlight);
 }
 
 /* Buttons */
@@ -100,18 +116,33 @@ input:focus, select:focus, textarea:focus {
 button {
   flex: 1;
   padding: 12px;
-  background-color: #00ff99;
+  background-color: var(--accent);
   border: none;
   border-radius: 6px;
-  color: #111;
+  color: var(--footer-text);
   font-weight: bold;
   cursor: pointer;
-  transition: 0.2s;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 button:hover {
-  background-color: #00cc77;
-  box-shadow: 0 0 10px #00ff99;
+  background-color: var(--accent-hover);
+  box-shadow: 0 0 10px var(--accent);
+}
+
+/* Theme Switcher */
+.theme-switcher {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.theme-switcher select {
+  background: var(--input-bg);
+  border: 1px solid var(--accent);
+  color: var(--text-color);
+  padding: 8px;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
 }
 
 /* Footer */
@@ -119,7 +150,7 @@ footer {
   text-align: center;
   padding: 10px;
   font-size: 0.8em;
-  background-color: #111;
-  color: #33ffaa;
-  border-top: 1px solid #00ff99;
+  background-color: var(--input-bg);
+  color: var(--accent);
+  border-top: 1px solid var(--border-color);
 }
