@@ -30,6 +30,18 @@ function rot13(text) {
   });
 }
 
+// ---------- Caesar Cipher ----------
+function caesarEncrypt(text, key) {
+  return text.replace(/[a-zA-Z]/g, c => {
+    const code = c.charCodeAt(0);
+    const base = (code >= 65 && code <= 90) ? 65 : 97;
+    return String.fromCharCode(((code - base + key) % 26) + base);
+  });
+}
+function caesarDecrypt(text, key) {
+  return caesarEncrypt(text, 26 - key);
+}
+
 // ---------- Jam Cipher ----------
 function jamEncryptDet(text, step, startHour, startMinute) {
   if (!validateStep(step)) return "Error: step harus pembagi 60!";
@@ -71,16 +83,19 @@ function jamDecryptDet(tokenStr, step, startHour, startMinute) {
 document.addEventListener("DOMContentLoaded", () => {
   const algorithmSelect = document.getElementById("algorithm");
   const jamSettings = document.getElementById("jamSettings");
+  const caesarSettings = document.getElementById("caesarSettings");
   const inputEl = document.getElementById("inputText");
   const outputEl = document.getElementById("outputText");
   const encryptBtn = document.getElementById("encryptBtn");
   const decryptBtn = document.getElementById("decryptBtn");
 
-  function updateJamVisibility() {
+  function updateVisibility() {
     jamSettings.style.display = (algorithmSelect.value === "jam") ? "block" : "none";
+    caesarSettings.style.display = (algorithmSelect.value === "caesar") ? "block" : "none";
   }
-  algorithmSelect.addEventListener("change", updateJamVisibility);
-  updateJamVisibility();
+
+  algorithmSelect.addEventListener("change", updateVisibility);
+  updateVisibility();
 
   function readJamParams() {
     return {
@@ -95,6 +110,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let result = "";
     if (algorithmSelect.value === "rot13") result = rot13(text);
     else if (algorithmSelect.value === "atbash") result = atbash(text);
+    else if (algorithmSelect.value === "caesar") {
+      const key = parseInt(document.getElementById("caesarKey").value, 10);
+      result = caesarEncrypt(text, key);
+    }
     else if (algorithmSelect.value === "jam") {
       const { step, hour, minute } = readJamParams();
       result = jamEncryptDet(text, step, hour, minute);
@@ -107,49 +126,14 @@ document.addEventListener("DOMContentLoaded", () => {
     let result = "";
     if (algorithmSelect.value === "rot13") result = rot13(text);
     else if (algorithmSelect.value === "atbash") result = atbash(text);
+    else if (algorithmSelect.value === "caesar") {
+      const key = parseInt(document.getElementById("caesarKey").value, 10);
+      result = caesarDecrypt(text, key);
+    }
     else if (algorithmSelect.value === "jam") {
       const { step, hour, minute } = readJamParams();
       result = jamDecryptDet(text, step, hour, minute);
     }
     outputEl.value = result;
   });
-});
-
-const themes = {
-  matrix: {
-    "--bg-color": "#000000",
-    "--text-color": "#00ff88",
-    "--card-bg": "#0d0d0d",
-    "--accent": "#00ff66",
-    "--accent-hover": "#00cc55",
-    "--footer-bg": "#00ff66",
-    "--footer-text": "#000000"
-  },
-  cyberpunk: {
-    "--bg-color": "#0a0014",
-    "--text-color": "#ff00ff",
-    "--card-bg": "#1b0033",
-    "--accent": "#00ffff",
-    "--accent-hover": "#ff00ff",
-    "--footer-bg": "linear-gradient(90deg, #00ffff, #ff00ff)",
-    "--footer-text": "#0a0014"
-  },
-  vaporwave: {
-    "--bg-color": "#1a0033",
-    "--text-color": "#ff66cc",
-    "--card-bg": "#26004d",
-    "--accent": "#66ccff",
-    "--accent-hover": "#ff66cc",
-    "--footer-bg": "linear-gradient(90deg, #ff66cc, #66ccff)",
-    "--footer-text": "#1a0033"
-  }
-};
-
-const themeSelect = document.getElementById("themeSelect");
-
-themeSelect.addEventListener("change", (e) => {
-  const selectedTheme = themes[e.target.value];
-  for (const variable in selectedTheme) {
-    document.documentElement.style.setProperty(variable, selectedTheme[variable]);
-  }
 });

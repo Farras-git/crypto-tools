@@ -3,21 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Crypto Tools - ROT13 | Atbash | Jam Cipher</title>
+  <title>₿ Crypto Tools - ROT13 | Atbash | Caesar | Jam Cipher</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
     <h1>₿ Crypto Tools</h1>
-    <p class="subtitle">Encode & Decode with ROT13, Atbash, or Jam Cipher</p>
+    <p class="subtitle">Encode & Decode with ROT13, Atbash, Caesar, or Jam Cipher</p>
 
     <div class="card">
       <label for="algorithm">Choose Cipher:</label>
       <select id="algorithm">
         <option value="rot13">ROT13</option>
         <option value="atbash">Atbash</option>
+        <option value="caesar">Caesar Cipher</option>
         <option value="jam">Jam Cipher</option>
       </select>
+    </div>
+
+    <!-- Caesar Cipher Settings -->
+    <div id="caesarSettings" class="card caesar-settings">
+      <h2>Caesar Cipher Settings</h2>
+      <label for="caesarKey">Key (1–25):</label>
+      <input type="number" id="caesarKey" value="3" min="1" max="25" />
     </div>
 
     <!-- Jam Cipher Settings -->
@@ -25,7 +33,6 @@
       <h2>Jam Cipher Settings</h2>
 
       <label for="jamStep">Step (minutes per letter):</label>
-      <!-- hanya pilihan yang valid dan < 60 -->
       <select id="jamStep">
         <option value="1">1</option>
         <option value="2">2</option>
@@ -60,27 +67,13 @@
       <textarea id="outputText" rows="5" readonly></textarea>
     </div>
 
-    <div class="theme-switcher">
-  <label for="themeSelect">🎨 Pilih Tema:</label>
-  <select id="themeSelect">
-    <option value="matrix">Matrix Green</option>
-    <option value="cyberpunk">Cyberpunk Neon</option>
-    <option value="vaporwave">Vaporwave Retro</option>
-  </select>
-</div>
-
-
     <div class="card-footer"> 
       <p><b>Catatan:</b></p>
       <ul>
-       <li><b>ROT13:</b> Menggeser setiap huruf sebanyak 13 posisi dalam alfabet (A → N, B → O, dst). Encode & decode sama saja.</li>
-       <li><b>AtBash:</b> Membalik alfabet (A → Z, B → Y, C → X, dst). Encode & decode juga sama.</li>
-       <li><b>Jam Cipher:</b> 
-      Mengubah huruf menjadi format jam & menit.<br>
-      - Start Hour & Minute ditentukan di awal.<br>
-      - Huruf berikutnya maju sesuai step (menit per huruf).<br>
-      - Contoh: dengan step = 5 menit, A = 02:00, B = 02:05, C = 02:10.
-       </li>
+        <li><b>ROT13:</b> Menggeser setiap huruf sebanyak 13 posisi dalam alfabet. Encode & decode sama.</li>
+        <li><b>Atbash:</b> Membalik alfabet (A → Z, B → Y, dst). Encode & decode juga sama.</li>
+        <li><b>Caesar Cipher:</b> Menggeser huruf berdasarkan key tertentu (misalnya key = 3 → A jadi D). Gunakan tombol decrypt dengan key yang sama untuk mengembalikannya.</li>
+        <li><b>Jam Cipher:</b> Mengubah huruf menjadi format jam & menit berdasarkan step dan waktu mulai.</li>
       </ul>
     </div>
 
