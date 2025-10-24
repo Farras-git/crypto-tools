@@ -79,11 +79,61 @@ function jamDecryptDet(tokenStr, step, startHour, startMinute) {
   return chars.join("");
 }
 
+// ---------- Transposition Cipher ----------
+function normalizeText(s) {
+  return s.replace(/\s+/g, '').toUpperCase();
+}
+
+function transEncrypt(text, key) {
+  const plain = normalizeText(text);
+  const cols = parseInt(key, 10);
+  if (isNaN(cols) || cols < 2) return "Error: key minimal 2";
+
+  const rows = Math.ceil(plain.length / cols);
+  const pad = 'X';
+  const grid = Array.from({ length: rows }, (_, r) =>
+    Array.from({ length: cols }, (_, c) => {
+      const idx = r * cols + c;
+      return idx < plain.length ? plain[idx] : pad;
+    })
+  );
+
+  let result = "";
+  for (let c = 0; c < cols; c++) {
+    for (let r = 0; r < rows; r++) result += grid[r][c];
+  }
+  return result;
+}
+
+function transDecrypt(text, key) {
+  const cipher = normalizeText(text);
+  const cols = parseInt(key, 10);
+  if (isNaN(cols) || cols < 2) return "Error: key minimal 2";
+
+  const rows = Math.ceil(cipher.length / cols);
+  const pad = 'X';
+  const grid = Array.from({ length: rows }, () => Array(cols).fill(''));
+  let idx = 0;
+
+  for (let c = 0; c < cols; c++) {
+    for (let r = 0; r < rows; r++) {
+      grid[r][c] = idx < cipher.length ? cipher[idx++] : pad;
+    }
+  }
+
+  let result = "";
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) result += grid[r][c];
+  }
+  return result.replace(/X+$/, '');
+}
+
 // ---------- UI Logic ----------
 document.addEventListener("DOMContentLoaded", () => {
   const algorithmSelect = document.getElementById("algorithm");
   const jamSettings = document.getElementById("jamSettings");
   const caesarSettings = document.getElementById("caesarSettings");
+  const transSettings = document.getElementById("transSettings");
   const inputEl = document.getElementById("inputText");
   const outputEl = document.getElementById("outputText");
   const encryptBtn = document.getElementById("encryptBtn");
@@ -92,6 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateVisibility() {
     jamSettings.style.display = (algorithmSelect.value === "jam") ? "block" : "none";
     caesarSettings.style.display = (algorithmSelect.value === "caesar") ? "block" : "none";
+    transSettings.style.display = (algorithmSelect.value === "transposition") ? "block" : "none";
   }
 
   algorithmSelect.addEventListener("change", updateVisibility);
@@ -108,15 +159,21 @@ document.addEventListener("DOMContentLoaded", () => {
   encryptBtn.addEventListener("click", () => {
     const text = inputEl.value;
     let result = "";
-    if (algorithmSelect.value === "rot13") result = rot13(text);
-    else if (algorithmSelect.value === "atbash") result = atbash(text);
-    else if (algorithmSelect.value === "caesar") {
-      const key = parseInt(document.getElementById("caesarKey").value, 10);
-      result = caesarEncrypt(text, key);
-    }
-    else if (algorithmSelect.value === "jam") {
-      const { step, hour, minute } = readJamParams();
-      result = jamEncryptDet(text, step, hour, minute);
+
+    switch (algorithmSelect.value) {
+      case "rot13": result = rot13(text); break;
+      case "atbash": result = atbash(text); break;
+      case "caesar":
+        result = caesarEncrypt(text, parseInt(document.getElementById("caesarKey").value, 10));
+        break;
+      case "jam":
+        const { step, hour, minute } = readJamParams();
+        result = jamEncryptDet(text, step, hour, minute);
+        break;
+      case "transposition":
+        const keyT = parseInt(document.getElementById("transKey").value, 10);
+        result = transEncrypt(text, keyT);
+        break;
     }
     outputEl.value = result;
   });
@@ -124,15 +181,21 @@ document.addEventListener("DOMContentLoaded", () => {
   decryptBtn.addEventListener("click", () => {
     const text = inputEl.value;
     let result = "";
-    if (algorithmSelect.value === "rot13") result = rot13(text);
-    else if (algorithmSelect.value === "atbash") result = atbash(text);
-    else if (algorithmSelect.value === "caesar") {
-      const key = parseInt(document.getElementById("caesarKey").value, 10);
-      result = caesarDecrypt(text, key);
-    }
-    else if (algorithmSelect.value === "jam") {
-      const { step, hour, minute } = readJamParams();
-      result = jamDecryptDet(text, step, hour, minute);
+
+    switch (algorithmSelect.value) {
+      case "rot13": result = rot13(text); break;
+      case "atbash": result = atbash(text); break;
+      case "caesar":
+        result = caesarDecrypt(text, parseInt(document.getElementById("caesarKey").value, 10));
+        break;
+      case "jam":
+        const { step, hour, minute } = readJamParams();
+        result = jamDecryptDet(text, step, hour, minute);
+        break;
+      case "transposition":
+        const keyT = parseInt(document.getElementById("transKey").value, 10);
+        result = transDecrypt(text, keyT);
+        break;
     }
     outputEl.value = result;
   });

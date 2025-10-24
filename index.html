@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>₿ Crypto Tools - ROT13 | Atbash | Caesar | Jam Cipher</title>
+  <title>₿ Crypto Tools - ROT13 | Atbash | Caesar | Jam | Transposition</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
     <h1>₿ Crypto Tools</h1>
-    <p class="subtitle">Encode & Decode with ROT13, Atbash, Caesar, or Jam Cipher</p>
+    <p class="subtitle">Encode & Decode with ROT13, Atbash, Caesar, Jam, or Transposition Cipher</p>
 
     <div class="card">
       <label for="algorithm">Choose Cipher:</label>
@@ -18,6 +18,7 @@
         <option value="atbash">Atbash</option>
         <option value="caesar">Caesar Cipher</option>
         <option value="jam">Jam Cipher</option>
+        <option value="transposition">Transposition Cipher</option>
       </select>
     </div>
 
@@ -54,6 +55,14 @@
       <input type="number" id="jamMinute" value="2" min="0" max="59" />
     </div>
 
+    <!-- Transposition Cipher Settings -->
+    <div id="transSettings" class="card trans-settings">
+      <h2>Transposition Cipher Settings</h2>
+      <label for="transKey">Key (number of columns):</label>
+      <input type="number" id="transKey" value="6" min="2" max="20" />
+      <p class="note">Contoh: key = 6 → tulis pesan dalam 6 kolom.</p>
+    </div>
+
     <div class="card">
       <label for="inputText">Input</label>
       <textarea id="inputText" rows="5" placeholder="Enter text or cipher here..."></textarea>
@@ -70,10 +79,11 @@
     <div class="card-footer"> 
       <p><b>Catatan:</b></p>
       <ul>
-        <li><b>ROT13:</b> Menggeser setiap huruf sebanyak 13 posisi dalam alfabet. Encode & decode sama.</li>
-        <li><b>Atbash:</b> Membalik alfabet (A → Z, B → Y, dst). Encode & decode juga sama.</li>
-        <li><b>Caesar Cipher:</b> Menggeser huruf berdasarkan key tertentu (misalnya key = 3 → A jadi D). Gunakan tombol decrypt dengan key yang sama untuk mengembalikannya.</li>
-        <li><b>Jam Cipher:</b> Mengubah huruf menjadi format jam & menit berdasarkan step dan waktu mulai.</li>
+        <li><b>ROT13:</b> Menggeser huruf 13 posisi dalam alfabet.</li>
+        <li><b>Atbash:</b> Membalik alfabet (A→Z, B→Y, dst).</li>
+        <li><b>Caesar:</b> Menggeser huruf berdasarkan key tertentu.</li>
+        <li><b>Jam Cipher:</b> Mengubah huruf menjadi format jam & menit.</li>
+        <li><b>Transposition:</b> Mengacak urutan huruf berdasarkan jumlah kolom (key).</li>
       </ul>
     </div>
 
