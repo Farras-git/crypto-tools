@@ -3,13 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>₿ Crypto Tools - ROT13 | Atbash | Caesar | Jam | Transposition</title>
+  <title>Crypto Tools - ROT13 | Atbash | Caesar | Jam | Transposition | Vigenère</title>
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Mammoth.js untuk baca DOCX -->
+  <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
+
+  <!-- FileSaver untuk membuat file DOCX saat download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>₿ Crypto Tools</h1>
-    <p class="subtitle">Encode & Decode with ROT13, Atbash, Caesar, Jam, or Transposition Cipher</p>
+    <p class="subtitle">
+      Encode & Decode with ROT13, Atbash, Caesar, Jam, Transposition, Random Transposition, or Vigenère Cipher
+    </p>
 
     <div class="card">
       <label for="algorithm">Choose Cipher:</label>
@@ -19,33 +27,34 @@
         <option value="caesar">Caesar Cipher</option>
         <option value="jam">Jam Cipher</option>
         <option value="transposition">Transposition Cipher</option>
+        <option value="randomTransposition">Transposisi Acak</option>
+        <option value="vigenere">Vigenère Cipher</option>
       </select>
     </div>
 
-    <!-- Caesar Cipher Settings -->
+    <div id="vigenereSettings" class="card vigenere-settings">
+      <h2>Vigenère Cipher Settings</h2>
+      <label for="vigenereKey">Key (huruf saja, tanpa spasi):</label>
+      <input type="text" id="vigenereKey" value="MULIA" />
+      <p class="note">Contoh: Plaintext = SAYABELAJAR, Key = MULIA</p>
+    </div>
+
     <div id="caesarSettings" class="card caesar-settings">
       <h2>Caesar Cipher Settings</h2>
       <label for="caesarKey">Key (1–25):</label>
       <input type="number" id="caesarKey" value="3" min="1" max="25" />
     </div>
 
-    <!-- Jam Cipher Settings -->
     <div id="jamSettings" class="card jam-settings">
       <h2>Jam Cipher Settings</h2>
-
       <label for="jamStep">Step (minutes per letter):</label>
       <select id="jamStep">
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="3">3</option>
-        <option value="4">4</option>
         <option value="5" selected>5</option>
-        <option value="6">6</option>
         <option value="10">10</option>
-        <option value="12">12</option>
         <option value="15">15</option>
-        <option value="20">20</option>
-        <option value="30">30</option>
       </select>
 
       <label for="jamHour">Start Hour (1–12):</label>
@@ -55,44 +64,52 @@
       <input type="number" id="jamMinute" value="2" min="0" max="59" />
     </div>
 
-    <!-- Transposition Cipher Settings -->
     <div id="transSettings" class="card trans-settings">
       <h2>Transposition Cipher Settings</h2>
-      <label for="transKey">Key (number of columns):</label>
+      <label for="transKey">Key (columns):</label>
       <input type="number" id="transKey" value="6" min="2" max="20" />
-      <p class="note">Contoh: key = 6 → tulis pesan dalam 6 kolom.</p>
+    </div>
+
+    <div id="randomTransSettings" class="card random-trans-settings">
+      <h2>Transposisi Acak Settings</h2>
+      <label for="randomBlock">Blok (jumlah huruf):</label>
+      <input type="number" id="randomBlock" value="6" min="2" max="20" />
+
+      <label for="randomKey">Key (misal: 6,5,4,1,2,3):</label>
+      <input type="text" id="randomKey" value="6,5,4,1,2,3" />
     </div>
 
     <div class="card">
-      <label for="inputText">Input</label>
-      <textarea id="inputText" rows="5" placeholder="Enter text or cipher here..."></textarea>
+      <label for="inputText">Input Manual</label>
+      <textarea id="inputText" rows="5" placeholder="Masukkan teks..."></textarea>
+
+      <label for="inputFile">Atau Upload (.txt / .docx):</label>
+      <input type="file" id="inputFile" accept=".txt,.docx">
+
+      <div class="buttonn">
+        <button id="clearBtn" class="btn danger">Clear</button>
+      </div>
 
       <div class="buttons">
         <button id="encryptBtn">Encrypt</button>
         <button id="decryptBtn">Decrypt</button>
       </div>
 
-      <label for="outputText">Output</label>
+      <label>Output</label>
       <textarea id="outputText" rows="5" readonly></textarea>
-    </div>
 
-    <div class="card-footer"> 
-      <p><b>Catatan:</b></p>
-      <ul>
-        <li><b>ROT13:</b> Menggeser huruf 13 posisi dalam alfabet.</li>
-        <li><b>Atbash:</b> Membalik alfabet (A→Z, B→Y, dst).</li>
-        <li><b>Caesar:</b> Menggeser huruf berdasarkan key tertentu.</li>
-        <li><b>Jam Cipher:</b> Mengubah huruf menjadi format jam & menit.</li>
-        <li><b>Transposition:</b> Mengacak urutan huruf berdasarkan jumlah kolom (key).</li>
-      </ul>
+      <div class="buttons">
+        <button id="downloadTxtBtn" style="background:#f7ab1f;">Download .txt</button>
+        <button id="downloadDocxBtn" style="background:#ffb90a;">Download .docx</button>
+      </div>
     </div>
-
   </div>
 
   <footer>
     <p>Made by LunarX | Simple Cryptography Tools</p>
   </footer>
 
-  <script src="script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.3.0/build/index.umd.js"></script>
+<script src="script.js"></script>
 </body>
 </html>

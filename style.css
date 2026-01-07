@@ -1,14 +1,14 @@
 :root {
-  --bg-color: #fdfdfd; 
+  --bg-color: #baeed9; 
   --text-color: #000000;
   --card-bg: #f8f8f8;
-  --accent: #d32f2f;
-  --accent-hover: #b71c1c;
-  --footer-bg: #d32f2f;
+  --accent: #19e6a2;
+  --accent-hover: #34ffdd;
+  --footer-bg: #41ffc0;
   --footer-text: #ffffff;
   --input-bg: #ffffff;
-  --border-color: #d32f2f;
-  --highlight: #b71c1c;
+  --border-color: #36deb7;
+  --highlight: #1cb76a;
   --subtitle: #444;
 }
 
@@ -23,7 +23,6 @@ body {
   min-height: 100vh;
 }
 
-/* Container */
 .container {
   flex: 1;
   max-width: 800px;
@@ -31,11 +30,10 @@ body {
   padding: 20px;
 }
 
-/* Title & subtitle */
 h1 {
   text-align: center;
   color: var(--accent);
-  text-shadow: 0 0 6px rgba(211, 47, 47, 0.5);
+  text-shadow: 0 0 6px rgba(47, 208, 211, 0.5);
   margin-bottom: 10px;
 }
 
@@ -46,7 +44,6 @@ h1 {
   margin-bottom: 20px;
 }
 
-/* Card */
 .card {
   background-color: var(--card-bg);
   border: 1px solid var(--accent);
@@ -62,23 +59,6 @@ h1 {
   color: var(--accent);
 }
 
-/* Card footer */
-.card-footer {
-  margin-top: 20px;
-  padding: 15px;
-  background: var(--footer-bg);
-  color: var(--footer-text);
-  border-radius: 8px;
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.card-footer ul {
-  margin-left: 5px;
-  margin-bottom: 10px;
-}
-
-/* Inputs */
 label {
   display: block;
   margin-top: 10px;
@@ -94,17 +74,9 @@ input, select, textarea {
   color: var(--text-color);
   font-family: 'Courier New', monospace;
   font-size: 1em;
-  resize: vertical;
   box-sizing: border-box;
 }
 
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  border-color: var(--highlight);
-  box-shadow: 0 0 5px var(--highlight);
-}
-
-/* Buttons */
 .buttons {
   display: flex;
   gap: 10px;
@@ -120,20 +92,37 @@ button {
   color: var(--footer-text);
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 button:hover {
   background-color: var(--accent-hover);
-  box-shadow: 0 0 8px rgba(183, 28, 28, 0.5);
+  box-shadow: 0 0 10px #06ffd580;
 }
 
-/* Footer */
+.buttonn {
+  gap: 10px;
+  margin: 15px 0;
+}
+
+
+.btn.danger {
+  background: rgba(255, 100, 100, 0.25);
+  border: 1px solid rgba(255, 80, 80, 0.5);
+  color: #fc4646;
+}
+
+.btn.danger:hover {
+  background: rgba(255, 80, 80, 0.45);
+  color: white;
+}
+
+
 footer {
   text-align: center;
   padding: 10px;
   font-size: 0.8em;
   background-color: var(--footer-bg);
   color: var(--footer-text);
-  border-top: 1px solid var(--border-color);
 }
+
+

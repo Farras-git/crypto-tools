@@ -1,202 +1,308 @@
-// ---------- Utility ----------
-function pad2(n) { return n.toString().padStart(2, "0"); }
-function validateStep(step) { return Number.isInteger(step) && step > 0 && step < 60 && (60 % step) === 0; }
+// =============================
+// Utility
+// =============================
 function letterIndex(ch) {
   const c = ch.toUpperCase();
   if (c < "A" || c > "Z") return null;
   return c.charCodeAt(0) - 65;
 }
-
-// ---------- Atbash ----------
-function atbash(text) {
-  const A = "A".charCodeAt(0);
-  return text.split("").map(ch => {
-    const up = ch.toUpperCase();
-    if (up >= "A" && up <= "Z") {
-      const idx = up.charCodeAt(0) - A;
-      const rev = String.fromCharCode(A + (25 - idx));
-      return (ch === ch.toLowerCase()) ? rev.toLowerCase() : rev;
-    }
-    return ch;
-  }).join("");
-}
-
-// ---------- ROT13 ----------
-function rot13(text) {
-  return text.replace(/[a-zA-Z]/g, c => {
-    const code = c.charCodeAt(0);
-    const base = (code >= 65 && code <= 90) ? 65 : 97;
-    return String.fromCharCode(((code - base + 13) % 26) + base);
-  });
-}
-
-// ---------- Caesar Cipher ----------
-function caesarEncrypt(text, key) {
-  return text.replace(/[a-zA-Z]/g, c => {
-    const code = c.charCodeAt(0);
-    const base = (code >= 65 && code <= 90) ? 65 : 97;
-    return String.fromCharCode(((code - base + key) % 26) + base);
-  });
-}
-function caesarDecrypt(text, key) {
-  return caesarEncrypt(text, 26 - key);
-}
-
-// ---------- Jam Cipher ----------
-function jamEncryptDet(text, step, startHour, startMinute) {
-  if (!validateStep(step)) return "Error: step harus pembagi 60!";
-  const baseTotal = ((startHour % 12) * 60 + startMinute) % 720;
-  const tokens = [];
-  for (let ch of text) {
-    if (ch === " ") { tokens.push("00:00"); continue; }
-    const idx = letterIndex(ch);
-    if (idx === null) { tokens.push(ch); continue; }
-    const total = (baseTotal + idx * step) % 720;
-    let h = Math.floor(total / 60);
-    let m = total % 60;
-    let displayHour = (h === 0) ? 12 : h;
-    tokens.push(pad2(displayHour) + ":" + pad2(m));
-  }
-  return tokens.join(" ");
-}
-
-function jamDecryptDet(tokenStr, step, startHour, startMinute) {
-  if (!validateStep(step)) return "Error: step harus pembagi 60!";
-  const baseTotal = ((startHour % 12) * 60 + startMinute) % 720;
-  const rawTokens = tokenStr.split(" ").filter(t => t.length > 0);
-  const chars = [];
-  for (let t of rawTokens) {
-    if (t === "00:00") { chars.push(" "); continue; }
-    if (!t.includes(":")) { chars.push(t); continue; }
-    const [hh, mm] = t.split(":").map(Number);
-    let hInternal = (hh === 12) ? 0 : hh;
-    const total = (hInternal * 60 + mm) % 720;
-    const diff = (total - baseTotal + 720) % 720;
-    if (diff % step !== 0) { chars.push("?"); continue; }
-    const idx = (diff / step) % 26;
-    chars.push(String.fromCharCode(65 + idx));
-  }
-  return chars.join("");
-}
-
-// ---------- Transposition Cipher ----------
 function normalizeText(s) {
   return s.replace(/\s+/g, '').toUpperCase();
 }
+function mod(n, m) {
+  return ((n % m) + m) % m;
+}
 
+// =============================
+// ROT13
+// =============================
+function rot13Encrypt(text) {
+  return text.replace(/[a-zA-Z]/g, function (c) {
+    return String.fromCharCode(
+      (c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13)
+        ? c
+        : c - 26
+    );
+  });
+}
+const rot13Decrypt = rot13Encrypt;
+
+// =============================
+// Atbash
+// =============================
+function atbashEncrypt(text) {
+  const A = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const R = "ZYXWVUTSRQPONMLKJIHGFEDCBA";
+  let result = "";
+  for (let ch of text.toUpperCase()) {
+    result += A.includes(ch) ? R[A.indexOf(ch)] : ch;
+  }
+  return result;
+}
+const atbashDecrypt = atbashEncrypt;
+
+// =============================
+// Caesar
+// =============================
+function caesarEncrypt(text, shift) {
+  let result = "";
+  for (let ch of text.toUpperCase()) {
+    const idx = letterIndex(ch);
+    if (idx !== null) result += String.fromCharCode(65 + ((idx + shift) % 26));
+    else result += ch;
+  }
+  return result;
+}
+function caesarDecrypt(text, shift) {
+  return caesarEncrypt(text, 26 - shift);
+}
+
+// =============================
+// Jam Cipher
+// =============================
+function jamEncrypt(text, step, hour, minute) {
+  const clean = text.toUpperCase().replace(/\s+/g, "");
+  let result = [];
+  for (let i = 0; i < clean.length; i++) {
+    result.push(`${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2,"0")}`);
+    minute += step;
+    if (minute >= 60) {
+      hour += Math.floor(minute / 60);
+      minute %= 60;
+      if (hour > 12) hour -= 12;
+    }
+  }
+  return result.join(" ");
+}
+function jamDecrypt(text) {
+  return "Jam cipher tidak bisa didekripsi sempurna (one-way cipher).";
+}
+
+// =============================
+// Transposition
+// =============================
 function transEncrypt(text, key) {
-  const plain = normalizeText(text);
-  const cols = parseInt(key, 10);
-  if (isNaN(cols) || cols < 2) return "Error: key minimal 2";
+  const clean = text.replace(/\s+/g, "");
+  let cols = Array.from({ length: key }, () => "");
+  for (let i = 0; i < clean.length; i++) {
+    cols[i % key] += clean[i];
+  }
+  return cols.join("");
+}
+function transDecrypt(text, key) {
+  const clean = text.replace(/\s+/g, "");
+  const numRows = Math.ceil(clean.length / key);
+  const shortCols = key * numRows - clean.length;
+  let cols = [];
+  let start = 0;
 
-  const rows = Math.ceil(plain.length / cols);
-  const pad = 'X';
-  const grid = Array.from({ length: rows }, (_, r) =>
-    Array.from({ length: cols }, (_, c) => {
-      const idx = r * cols + c;
-      return idx < plain.length ? plain[idx] : pad;
-    })
-  );
+  for (let i = 0; i < key; i++) {
+    const len = i >= key - shortCols ? numRows - 1 : numRows;
+    cols[i] = clean.slice(start, start + len);
+    start += len;
+  }
 
   let result = "";
-  for (let c = 0; c < cols; c++) {
-    for (let r = 0; r < rows; r++) result += grid[r][c];
+  for (let r = 0; r < numRows; r++) {
+    for (let c = 0; c < key; c++) {
+      if (cols[c][r]) result += cols[c][r];
+    }
   }
   return result;
 }
 
-function transDecrypt(text, key) {
-  const cipher = normalizeText(text);
-  const cols = parseInt(key, 10);
-  if (isNaN(cols) || cols < 2) return "Error: key minimal 2";
-
-  const rows = Math.ceil(cipher.length / cols);
-  const pad = 'X';
-  const grid = Array.from({ length: rows }, () => Array(cols).fill(''));
-  let idx = 0;
-
-  for (let c = 0; c < cols; c++) {
-    for (let r = 0; r < rows; r++) {
-      grid[r][c] = idx < cipher.length ? cipher[idx++] : pad;
-    }
-  }
-
+// =============================
+// Random Transposisi
+// =============================
+function randomTransEncrypt(text, blockSize, keyOrder) {
+  const key = keyOrder.split(",").map(Number);
+  let clean = text.replace(/\s+/g, "");
   let result = "";
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) result += grid[r][c];
+
+  for (let i=0; i < clean.length; i+=blockSize) {
+    let block = clean.slice(i, i+blockSize).split("");
+    let temp = [];
+    for (let j=0; j<key.length; j++) {
+      const pos = key[j]-1;
+      if (pos < block.length) temp.push(block[pos]);
+    }
+    result += temp.join("");
   }
-  return result.replace(/X+$/, '');
+  return result;
+}
+function randomTransDecrypt(text, blockSize, keyOrder) {
+  const key = keyOrder.split(",").map(Number);
+  let clean = text.replace(/\s+/g, "");
+  let result = "";
+
+  for (let i=0; i < clean.length; i+=blockSize) {
+    let block = clean.slice(i, i+blockSize).split("");
+    let temp = Array(block.length);
+    for (let j=0; j<key.length; j++) {
+      const pos = key[j]-1;
+      if (pos < block.length) temp[pos] = block[j];
+    }
+    result += temp.join("");
+  }
+  return result;
 }
 
-// ---------- UI Logic ----------
-document.addEventListener("DOMContentLoaded", () => {
-  const algorithmSelect = document.getElementById("algorithm");
-  const jamSettings = document.getElementById("jamSettings");
-  const caesarSettings = document.getElementById("caesarSettings");
-  const transSettings = document.getElementById("transSettings");
-  const inputEl = document.getElementById("inputText");
-  const outputEl = document.getElementById("outputText");
-  const encryptBtn = document.getElementById("encryptBtn");
-  const decryptBtn = document.getElementById("decryptBtn");
+// =============================
+// Vigenère
+// =============================
+function vigenereEncrypt(plaintext, key) {
+  const P = normalizeText(plaintext);
+  const K = normalizeText(key);
+  let result = "";
 
-  function updateVisibility() {
-    jamSettings.style.display = (algorithmSelect.value === "jam") ? "block" : "none";
-    caesarSettings.style.display = (algorithmSelect.value === "caesar") ? "block" : "none";
-    transSettings.style.display = (algorithmSelect.value === "transposition") ? "block" : "none";
+  for (let i=0; i<P.length; i++) {
+    const p = letterIndex(P[i]);
+    const k = letterIndex(K[i % K.length]);
+    result += String.fromCharCode(65 + ((p + k) % 26));
   }
+  return result;
+}
+function vigenereDecrypt(cipher, key) {
+  const C = normalizeText(cipher);
+  const K = normalizeText(key);
+  let result = "";
 
-  algorithmSelect.addEventListener("change", updateVisibility);
-  updateVisibility();
-
-  function readJamParams() {
-    return {
-      step: parseInt(document.getElementById("jamStep").value, 10),
-      hour: parseInt(document.getElementById("jamHour").value, 10),
-      minute: parseInt(document.getElementById("jamMinute").value, 10)
-    };
+  for (let i=0; i<C.length; i++) {
+    const c = letterIndex(C[i]);
+    const k = letterIndex(K[i % K.length]);
+    result += String.fromCharCode(65 + mod((c - k), 26));
   }
+  return result;
+}
 
-  encryptBtn.addEventListener("click", () => {
-    const text = inputEl.value;
-    let result = "";
+// =============================
+// DOCX Reader
+// =============================
+async function readDocx(file) {
+  const arrayBuffer = await file.arrayBuffer();
+  const result = await mammoth.extractRawText({ arrayBuffer });
+  return result.value;
+}
 
-    switch (algorithmSelect.value) {
-      case "rot13": result = rot13(text); break;
-      case "atbash": result = atbash(text); break;
-      case "caesar":
-        result = caesarEncrypt(text, parseInt(document.getElementById("caesarKey").value, 10));
-        break;
-      case "jam":
-        const { step, hour, minute } = readJamParams();
-        result = jamEncryptDet(text, step, hour, minute);
-        break;
-      case "transposition":
-        const keyT = parseInt(document.getElementById("transKey").value, 10);
-        result = transEncrypt(text, keyT);
-        break;
-    }
-    outputEl.value = result;
+// =============================
+// DOCX Download (Preserve Multiline)
+// =============================
+async function downloadDocx(text) {
+  const { Document, Packer, Paragraph } = docx;
+
+  const lines = text.split("\n"); // pecah baris
+  const paragraphs = lines.map(line => new Paragraph(line));
+
+  const doc = new Document({
+    sections: [{ children: paragraphs }]
   });
 
-  decryptBtn.addEventListener("click", () => {
-    const text = inputEl.value;
+  const blob = await Packer.toBlob(doc);
+  saveAs(blob, "crypto_output.docx");
+}
+
+// =============================
+// UI Logic
+// =============================
+document.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("inputText");
+  const output = document.getElementById("outputText");
+  const algo = document.getElementById("algorithm");
+
+  function updateVisibility() {
+    document.getElementById("vigenereSettings").style.display = (algo.value === "vigenere" ? "block" : "none");
+    document.getElementById("caesarSettings").style.display  = (algo.value === "caesar" ? "block" : "none");
+    document.getElementById("jamSettings").style.display      = (algo.value === "jam" ? "block" : "none");
+    document.getElementById("transSettings").style.display    = (algo.value === "transposition" ? "block" : "none");
+    document.getElementById("randomTransSettings").style.display = (algo.value === "randomTransposition" ? "block" : "none");
+  }
+  algo.addEventListener("change", updateVisibility);
+  updateVisibility();
+
+  // =============================
+  // UPLOAD FILE (.txt / .docx)
+  // =============================
+  document.getElementById("inputFile").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const ext = file.name.split(".").pop().toLowerCase();
+
+    if (ext === "txt") {
+      const reader = new FileReader();
+      reader.onload = ev => input.value = ev.target.result;
+      reader.readAsText(file);
+    }
+    else if (ext === "docx") {
+      const text = await readDocx(file);
+      input.value = text;
+    }
+    else {
+      alert("Format tidak didukung. Gunakan TXT atau DOCX.");
+    }
+  });
+
+  // =============================
+  // ENCRYPT
+  // =============================
+  document.getElementById("encryptBtn").addEventListener("click", () => {
+    const text = input.value;
     let result = "";
 
-    switch (algorithmSelect.value) {
-      case "rot13": result = rot13(text); break;
-      case "atbash": result = atbash(text); break;
-      case "caesar":
-        result = caesarDecrypt(text, parseInt(document.getElementById("caesarKey").value, 10));
-        break;
-      case "jam":
-        const { step, hour, minute } = readJamParams();
-        result = jamDecryptDet(text, step, hour, minute);
-        break;
-      case "transposition":
-        const keyT = parseInt(document.getElementById("transKey").value, 10);
-        result = transDecrypt(text, keyT);
-        break;
+    switch (algo.value) {
+      case "rot13": result = rot13Encrypt(text); break;
+      case "atbash": result = atbashEncrypt(text); break;
+      case "caesar": result = caesarEncrypt(text, parseInt(caesarKey.value)); break;
+      case "jam": result = jamEncrypt(text, parseInt(jamStep.value), parseInt(jamHour.value), parseInt(jamMinute.value)); break;
+      case "transposition": result = transEncrypt(text, parseInt(transKey.value)); break;
+      case "randomTransposition": result = randomTransEncrypt(text, parseInt(randomBlock.value), randomKey.value); break;
+      case "vigenere": result = vigenereEncrypt(text, vigenereKey.value); break;
     }
-    outputEl.value = result;
+
+    output.value = result;
+  });
+
+  // =============================
+  // DECRYPT
+  // =============================
+  document.getElementById("decryptBtn").addEventListener("click", () => {
+    const text = input.value;
+    let result = "";
+
+    switch (algo.value) {
+      case "rot13": result = rot13Decrypt(text); break;
+      case "atbash": result = atbashDecrypt(text); break;
+      case "caesar": result = caesarDecrypt(text, parseInt(caesarKey.value)); break;
+      case "jam": result = jamDecrypt(text); break;
+      case "transposition": result = transDecrypt(text, parseInt(transKey.value)); break;
+      case "randomTransposition": result = randomTransDecrypt(text, parseInt(randomBlock.value), randomKey.value); break;
+      case "vigenere": result = vigenereDecrypt(text, vigenereKey.value); break;
+    }
+
+    output.value = result;
+  });
+
+  // =============================
+  // Download TXT
+  // =============================
+  document.getElementById("downloadTxtBtn").addEventListener("click", () => {
+    const blob = new Blob([output.value], { type: "text/plain" });
+    saveAs(blob, "crypto_output.txt");
+  });
+
+  // =============================
+  // Download DOCX (Multiline)
+  // =============================
+  document.getElementById("downloadDocxBtn").addEventListener("click", () => {
+    downloadDocx(output.value);
+  });
+
+  // =============================
+  // CLEAR BUTTON
+  // =============================
+  document.getElementById("clearBtn").addEventListener("click", () => {
+    input.value = "";
+    output.value = "";
+    document.getElementById("inputFile").value = ""; // reset file picker
   });
 });
